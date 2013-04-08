@@ -1,10 +1,10 @@
 # -*- encoding: utf-8 -*-
 $:.push File.expand_path("../lib", __FILE__)
-require "klaxon/version"
+require "tocsin/version"
 
 Gem::Specification.new do |s|
-  s.name        = "klaxon"
-  s.version     = Klaxon::VERSION
+  s.name        = "tocsin"
+  s.version     = Tocsin::VERSION
   s.authors     = ["Robert Nubel"]
   s.email       = ["rnubel@enovafinancial.com"]
   s.homepage    = ""

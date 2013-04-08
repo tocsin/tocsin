@@ -1,4 +1,4 @@
-module Klaxon
+module Tocsin
   module Notifiers
     def self.default_notifier
       :email

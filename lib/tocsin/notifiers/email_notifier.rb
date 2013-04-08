@@ -1,11 +1,11 @@
 require 'mail'
 
-module Klaxon
+module Tocsin
   module Notifiers
     class EmailNotifier
       def self.notify(recipients, alert)
         _body = "
-Alert raised by Klaxon on your site:
+Alert raised by Tocsin on your site:
 \n
 Message: #{alert.message}
 Category: #{alert.category}
@@ -14,12 +14,12 @@ Exception: #{alert.exception}
 Backtrace: #{alert.backtrace}
         ";
 
-        from_address = Klaxon.config.from_address || recipients.first
+        from_address = Tocsin.config.from_address || recipients.first
 
         Mail.deliver do
           from    from_address
           to      recipients.join(", ")
-          subject "[Klaxon] [#{alert.severity}] #{alert.message} (#{alert.category})"
+          subject "[Tocsin] [#{alert.severity}] #{alert.message} (#{alert.category})"
           body    _body
         end
       end

@@ -1,4 +1,4 @@
-module Klaxon
+module Tocsin
   class Config
     attr_accessor :logger, :queue, :recipient_groups, :from_address
 
@@ -8,7 +8,7 @@ module Klaxon
 
       recipients = [recipients] unless recipients.is_a? Array
       filters   = parameters[:of] || {}
-      notifier  = parameters[:by] || Klaxon::Notifiers.default_notifier
+      notifier  = parameters[:by] || Tocsin::Notifiers.default_notifier
 
       group_config = { :recipients  => recipients,
                        :notifier    => notifier}.merge(filters)

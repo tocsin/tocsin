@@ -1,20 +1,20 @@
-require "klaxon/version"
-require "klaxon/notifiers"
-require "klaxon/config"
+require "tocsin/version"
+require "tocsin/notifiers"
+require "tocsin/config"
 
 require "active_record/errors" 
 require 'logger'
 
 # Library for escalating and logging errors.
-module Klaxon
-  # Raise an alarm and escalate as configured in etc/klaxon.yml.
+module Tocsin
+  # Raise an alarm and escalate as configured in etc/tocsin.yml.
   # @param [Exception] exception exception object if one was raised
   # @option options :severity severity of this notication. Should be low,
   # medium, high, critical, or notification (arbitrary, though)
   # @option options :message any info attached to this notification
   # @option options :category totally arbitrary, but escalation can be configured based on
   # this field.
-  # @return [Klaxon::Alert] the created alert
+  # @return [Tocsin::Alert] the created alert
   def self.raise_alert(exception, options={})
     urgent = options.delete(:now) || options.delete(:urgent) || options.delete(:synchronous)
     alert  = alert_for(exception, options)
@@ -69,7 +69,7 @@ module Klaxon
 
     recipients_per_notifier = config.recipient_groups.inject({}) do |rec_lists, group|
       if alert_matches_group(alert, group)
-        notifier = group[:notifier] || Klaxon::Notifiers.default_notifier
+        notifier = group[:notifier] || Tocsin::Notifiers.default_notifier
         rec_lists[notifier] ||= []
         rec_lists[notifier] += group[:recipients]
       end
@@ -86,7 +86,7 @@ module Klaxon
   end
 
   def self.config
-    @config ||= Klaxon::Config.new
+    @config ||= Tocsin::Config.new
   end
 
   def self.queue
@@ -99,13 +99,13 @@ module Klaxon
 
   # Job to notify admins via email of a problem.
   class NotificationJob
-    @queue = Klaxon.queue
+    @queue = Tocsin.queue
 
     # Look up the given alert and notify recipients of it.
     def self.perform(alert_id)
-      Klaxon.sound(alert_id)
+      Tocsin.sound(alert_id)
     rescue ActiveRecord::RecordNotFound
-      Klaxon.logger.error { "Raised alert with ID=#{alert_id} but couldn't find that alert." }
+      Tocsin.logger.error { "Raised alert with ID=#{alert_id} but couldn't find that alert." }
     end
 
   end
@@ -113,25 +113,25 @@ module Klaxon
   private
 
   def self.sound(alert)
-    alert = Klaxon::Alert.find(alert) unless alert.is_a?(Klaxon::Alert)
-    recipients = Klaxon.recipients(alert)
+    alert = Tocsin::Alert.find(alert) unless alert.is_a?(Tocsin::Alert)
+    recipients = Tocsin.recipients(alert)
 
     recipients.each do |notifier_key, recipient_list|
-      notifier = Klaxon::Notifiers[notifier_key]
+      notifier = Tocsin::Notifiers[notifier_key]
 
       if notifier && recipient_list.any?
         notifier.notify(recipient_list, alert)
-        Klaxon.logger.info { "Notification sent to #{recipient_list.inspect} via #{notifier_key} for alert #{alert.id}." }
+        Tocsin.logger.info { "Notification sent to #{recipient_list.inspect} via #{notifier_key} for alert #{alert.id}." }
       elsif recipient_list.empty?
-        Klaxon.logger.error { "No recipients associated with alert: \n #{alert.inspect}" }
+        Tocsin.logger.error { "No recipients associated with alert: \n #{alert.inspect}" }
       elsif notifier.nil?
-        Klaxon.logger.error { "Raised alert with ID=#{alert.id} for unregistered notifier '#{notifier_key}'." }
+        Tocsin.logger.error { "Raised alert with ID=#{alert.id} for unregistered notifier '#{notifier_key}'." }
       end
     end
   end
 
   def self.alert_for(exception, options = {})
-    alert = Klaxon::Alert.create(
+    alert = Tocsin::Alert.create(
       :exception => exception && exception.to_s,
       :backtrace => exception && exception.backtrace.join("\n"),
       :severity => options[:severity].to_s || "",
@@ -141,14 +141,14 @@ module Klaxon
   end
 
   def self.queue(alert)
-    alert = Klaxon::Alert.find(alert) unless alert.is_a?(Klaxon::Alert)
+    alert = Tocsin::Alert.find(alert) unless alert.is_a?(Tocsin::Alert)
     Resque.enqueue(NotificationJob, alert.id)
   end
 
   def self.cannot_enqueue_alert(exception=nil)
-    logger.error "[Klaxon] Enqueuing alert job into Resque failed!"
+    logger.error "[Tocsin] Enqueuing alert job into Resque failed!"
     alert_for exception, :severity => "critical",
-                         :message => "[Klaxon] Enqueuing alert job into Resque failed!",
+                         :message => "[Tocsin] Enqueuing alert job into Resque failed!",
                          :category => "system"
   end
 

@@ -1,8 +1,8 @@
 require 'spec_helper'
 
-describe Klaxon::Notifiers::EmailNotifier do
+describe Tocsin::Notifiers::EmailNotifier do
   let(:alert) {
-    stub("Klaxon::Alert", :id => 1, :category => 'category', :severity => 'severity',
+    stub("Tocsin::Alert", :id => 1, :category => 'category', :severity => 'severity',
                           :message => 'message', :exception => 'exception',
                           :backtrace => 'backtrace')
   }
@@ -11,7 +11,7 @@ describe Klaxon::Notifiers::EmailNotifier do
     let(:origin_email) { "test@test.com" }
 
     before {
-      Klaxon.configure do |c|
+      Tocsin.configure do |c|
         c.from_address = "test@test.com"
       end
     }
@@ -29,7 +29,7 @@ describe Klaxon::Notifiers::EmailNotifier do
       end
 
       it "has a subject including the alert's message, severity and category" do
-        message.subject.should == "[Klaxon] [severity] message (category)"
+        message.subject.should == "[Tocsin] [severity] message (category)"
       end
 
       it "has a body including all fields" do
@@ -47,6 +47,6 @@ describe Klaxon::Notifiers::EmailNotifier do
   end
 
   it "registers itself under the key :email" do
-    Klaxon::Notifiers[:email].should == described_class
+    Tocsin::Notifiers[:email].should == described_class
   end
 end

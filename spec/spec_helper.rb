@@ -1,4 +1,4 @@
-require File.expand_path("../../lib/klaxon", __FILE__)
+require File.expand_path("../../lib/tocsin", __FILE__)
 
 RSpec.configure do |c|
   c.mock_with :mocha
@@ -8,7 +8,7 @@ Mail.defaults do
   delivery_method :test
 end
 
-class Klaxon::Alert
+class Tocsin::Alert
   def id
     1
   end
