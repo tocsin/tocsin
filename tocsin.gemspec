@@ -5,9 +5,9 @@ require "tocsin/version"
 Gem::Specification.new do |s|
   s.name        = "tocsin"
   s.version     = Tocsin::VERSION
-  s.authors     = ["Robert Nubel"]
-  s.email       = ["rnubel@enovafinancial.com"]
-  s.homepage    = ""
+  s.authors     = ["Robert Nubel","Blake Thomas"]
+  s.email       = ["tocsin.gem@gmail.com"]
+  s.homepage    = "https://github.com/tocsin/tocsin"
   s.summary     = %q{Notification and alert library for Rails-like projects.}
   s.description = %q{Supports wrapping code that you want to be alerted of failures in, as well as sending notifications through the same mechanism.}
 
