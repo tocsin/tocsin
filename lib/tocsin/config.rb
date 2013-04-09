@@ -1,6 +1,6 @@
 module Tocsin
   class Config
-    attr_accessor :logger, :queue, :recipient_groups, :from_address
+    attr_accessor :logger, :queue, :recipient_groups, :from_address, :exception_level
 
     # notify [r1, r2], :of => filters, :by => notifier 
     def notify(recipients, parameters)
