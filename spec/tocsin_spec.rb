@@ -44,6 +44,25 @@ describe Tocsin do
       }.should_not raise_error
     end
 
+    it "normally does not rescue low-level Exceptions" do
+      expect { Tocsin.watch(alert_options) do raise Exception.new end }.to raise_error
+    end
+
+    context "when configured to catch all Exceptions" do
+      before {
+        Tocsin.config.exception_level = Exception
+      }
+
+      it "can rescue low-level Exceptions too" do
+        expect { Tocsin.watch(alert_options) do raise Exception.new end }.to_not raise_error
+      end
+
+      it "still creates an alert when watch!-ing a block which raises an Exception" do
+        Tocsin.expects(:raise_alert).once
+        expect { Tocsin.watch!(alert_options) do raise Exception.new end }.to raise_error
+      end
+    end
+
     it "provides a watch! method which both send an alert and re-raises the exception" do
       Tocsin.expects(:raise_alert).with(is_a(Exception), has_entries(alert_options))
 

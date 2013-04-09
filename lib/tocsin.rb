@@ -42,7 +42,7 @@ module Tocsin
   def self.watch(options={})
     begin
       yield
-    rescue => e
+    rescue exception_level => e
       raise_alert(e, options)
     end
   end
@@ -51,7 +51,7 @@ module Tocsin
   def self.watch!(options={})
     begin
       yield
-    rescue => e
+    rescue exception_level => e
       raise_alert(e, options)
       raise e
     end
@@ -111,6 +111,10 @@ module Tocsin
   end
 
   private
+
+  def self.exception_level
+    config.exception_level
+  end
 
   def self.sound(alert)
     alert = Tocsin::Alert.find(alert) unless alert.is_a?(Tocsin::Alert)
