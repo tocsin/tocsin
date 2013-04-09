@@ -113,7 +113,7 @@ module Tocsin
   private
 
   def self.exception_level
-    config.exception_level || StandardError
+    config.exception_level
   end
 
   def self.sound(alert)

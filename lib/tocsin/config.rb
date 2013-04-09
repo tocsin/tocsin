@@ -2,6 +2,11 @@ module Tocsin
   class Config
     attr_accessor :logger, :queue, :recipient_groups, :from_address, :exception_level
 
+    def initialize
+      @queue            = :high
+      @exception_level  = StandardError
+    end
+
     # notify [r1, r2], :of => filters, :by => notifier 
     def notify(recipients, parameters)
       self.recipient_groups ||= []
@@ -13,10 +18,6 @@ module Tocsin
       group_config = { :recipients  => recipients,
                        :notifier    => notifier}.merge(filters)
       self.recipient_groups.push(group_config)
-    end
-
-    def queue
-      @queue ||= :high
     end
 
     def logger
