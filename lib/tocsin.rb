@@ -124,12 +124,16 @@ module Tocsin
       notifier = Tocsin::Notifiers[notifier_key]
 
       if notifier && recipient_list.any?
-        notifier.notify(recipient_list, alert)
-        Tocsin.logger.info { "Notification sent to #{recipient_list.inspect} via #{notifier_key} for alert #{alert.id}." }
+        logger.info { "Sending notification to #{recipient_list.inspect} via #{notifier_key} for alert #{alert.id}." }
+        begin
+          notifier.notify(recipient_list, alert)
+        rescue Timeout::Error, Errno::EHOSTUNREACH, Errno::ECONNREFUSED, Errno::ENETUNREACH, Errno::ETIMEDOUT => e
+          logger.error { "Notification failed. #{e.to_s}:\n#{e.backtrace.join('\n')}" }
+        end
       elsif recipient_list.empty?
-        Tocsin.logger.error { "No recipients associated with alert: \n #{alert.inspect}" }
+        logger.error { "No recipients associated with alert: \n #{alert.inspect}" }
       elsif notifier.nil?
-        Tocsin.logger.error { "Raised alert with ID=#{alert.id} for unregistered notifier '#{notifier_key}'." }
+        logger.error { "Raised alert with ID=#{alert.id} for unregistered notifier '#{notifier_key}'." }
       end
     end
   end

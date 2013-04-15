@@ -22,13 +22,13 @@ describe Tocsin do
   end
 
   context "when an exception has already been rescued" do
-    it "raises an alert" do
-      Tocsin::Alert.expects(:create).returns(stub("alert", :id => 1))
+    it "raises (and returns) an alert" do
+      Tocsin::Alert.expects(:create).returns(Tocsin::Alert.new)
 
       begin
         raise "Testing"
       rescue => e
-        Tocsin.raise_alert(e, alert_options)
+        Tocsin.raise_alert(e, alert_options).should be_a_kind_of(Tocsin::Alert)
       end
     end
   end
@@ -182,15 +182,18 @@ describe Tocsin do
       Tocsin.raise_alert(exception, alert_options)
     end
 
+    let(:attributes) do
+      { :exception  =>  exception.to_s,
+        :backtrace  =>  exception.backtrace.join("\n"),
+        :severity   =>  alert_options[:severity].to_s,
+        :message    =>  alert_options[:message].to_s,
+        :category   =>  alert_options[:category].to_s
+      }
+    end
+
     describe "the created Tocsin::Alert object" do
       it "is created with appropriate fields" do
-        Tocsin::Alert.expects(:create).with(has_entries(
-          :exception  =>  exception.to_s,
-          :backtrace  =>  exception.backtrace.join("\n"),
-          :severity   =>  alert_options[:severity].to_s,
-          :message    =>  alert_options[:message].to_s,
-          :category   =>  alert_options[:category].to_s
-        )).returns(stub("alert", :id => 1))
+        Tocsin::Alert.expects(:create).with(has_entries(attributes)).returns(Tocsin::Alert.new)
         alert
       end
     end
@@ -215,6 +218,30 @@ describe Tocsin do
       Tocsin.expects(:sound).twice
 
       expect { alert }.to_not raise_error
+    end
+
+    context "common communication errors" do
+      before do
+        Tocsin.configure do |c|
+          c.notify ["a@b.com"], :of => { :severity => /.*/ }
+          c.logger = Logger.new('/dev/null')
+        end
+      end
+
+      errors =  [ Timeout::Error,
+                  Errno::EHOSTUNREACH,
+                  Errno::ECONNREFUSED,
+                  Errno::ENETUNREACH,
+                  Errno::ETIMEDOUT ]
+
+      errors.each do |err|
+        it "logs #{err.to_s} without exploding" do
+          alert_options.merge!(now: true)
+          Mail.expects(:deliver).raises(err)
+          Tocsin.logger.expects(:error)
+          expect { alert }.to_not raise_error
+        end
+      end
     end
 
   end

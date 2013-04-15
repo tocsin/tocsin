@@ -9,26 +9,23 @@ Mail.defaults do
 end
 
 class Tocsin::Alert
-  def id
-    1
-  end
+  attr_accessor :id, :exception, :backtrace, :category, :severity, :message
 
-  def category
-  end
-
-  def severity
+  def initialize(args = {})
+    @id = 1
+    @backtrace = args[:backtrace]
+    @exception = args[:exception]
+    @category  = args[:category]
+    @severity  = args[:severity]
+    @message   = args[:message]
   end
 
   def self.create(*args)
-    self.new
+    self.new(*args)
   end
 
   def self.find(*args)
-    self.new
-  end
-
-  def self.logger
-    @logger ||= Logger.new($stdout)
+    self.new(*args)
   end
 end
 
