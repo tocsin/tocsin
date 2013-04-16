@@ -7,6 +7,62 @@ describe Tocsin::Notifiers::EmailNotifier do
                           :backtrace => 'backtrace')
   }
 
+  context "configurable mailer" do
+
+    let(:action_mailer_class) { ActionMailer::Base }
+    let(:alt_mailer_class)    { Foo }
+    let(:message)             { stub('message') }
+
+    before(:all) do
+      unless defined?(ActionMailer::Base)
+        module ActionMailer
+          class Base
+            def self.mail(*args)
+              Mail.new(*args)
+            end
+          end
+        end
+      end
+
+      class Foo < ActionMailer::Base; end
+    end
+
+    after(:all) do
+      # reset to default configuration after everything.
+      ActionMailer.send(:remove_const, :Base)
+      Object.send(:remove_const, :ActionMailer)
+      Tocsin.configure {}
+    end
+
+    it "uses ActionMailer::Base by default when available" do
+      Tocsin.configure {}
+      message.expects(:deliver).returns(true)
+      action_mailer_class.expects(:mail).returns(message)
+      described_class.notify(["a@b.com"], alert)
+    end
+
+    it "uses the specified mailer when configured" do
+      Tocsin.configure do |c|
+        c.mailer = alt_mailer_class
+      end
+
+      message.expects(:deliver).returns(true)
+      alt_mailer_class.expects(:mail).returns(message)
+      described_class.notify(["a@b.com"], alert)
+    end
+
+    it "uses the specified mail_method when configured" do
+      Tocsin.configure do |c|
+        c.mailer = alt_mailer_class
+        c.mailer_method = :some_dumb_method_name
+      end
+
+      message.expects(:deliver).returns(true)
+      alt_mailer_class.expects(:some_dumb_method_name).returns(message)
+      described_class.notify(["a@b.com"], alert)
+    end
+  end
+
   describe "notifying" do
     let(:origin_email) { "test@test.com" }
 
