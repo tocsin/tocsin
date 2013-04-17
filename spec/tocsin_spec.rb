@@ -221,11 +221,15 @@ describe Tocsin do
     end
 
     context "common communication errors" do
+      let(:mail) { mock('mail') }
+
       before do
         Tocsin.configure do |c|
           c.notify ["a@b.com"], :of => { :severity => /.*/ }
           c.logger = Logger.new('/dev/null')
         end
+
+        Mail.expects(:new).returns(mail)
       end
 
       errors =  [ Timeout::Error,
@@ -237,7 +241,7 @@ describe Tocsin do
       errors.each do |err|
         it "logs #{err.to_s} without exploding" do
           alert_options.merge!(now: true)
-          Mail.expects(:deliver).raises(err)
+          mail.expects(:deliver).raises(err)
           Tocsin.logger.expects(:error)
           expect { alert }.to_not raise_error
         end
