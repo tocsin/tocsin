@@ -1,25 +1,27 @@
 # Tocsin
-Tocsin is a library designed to simply the task of notifying interested parties about your site's operation. You may already be tracking errors through [New Relic](http://www.newrelic.com), but not all errors are created equal -- there are probably parts of your site where an exception occuring is significantly more of a problem than a bored URL surfer visiting random links and throwing 404s. Tocsin can help you be informed when these parts of your site break, or when important events happen.
+Tocsin is a library designed to simplify the task of notifying interested parties about your site's
+operation. You may already be tracking errors through [New Relic](http://www.newrelic.com), but not
+all errors are created equal -- there are probably parts of your site where an exception is a bigger
+problem than a random link surfing throwing 404s. Tocsin will inform you when these parts of your
+site break, or when important events happen, or really whenever you configure it to notify you.
 
 Currently, Tocsin works only in Rails 3, and supports notification via email.
 
 ## Installation
 Add Tocsin to your Gemfile:
-<pre>
-gem 'tocsin'
-</pre>
+<pre>gem 'tocsin'</pre>
 
 Update your bundle:
-<pre>
-bundle install
-</pre>
+<pre>bundle install</pre>
 
-Use the provided Rake task to generate the migration and model needed by Tocsin. (Angry at the lack of normalization? Install [lookup_by](https://github.com/companygardener/lookup_by/) and rewrite the migration and model to use it; Tocsin won't even notice.)
-<pre>
-rake tocsin:install
-</pre>
+Use the provided Rake task to generate the migration and model needed by Tocsin. (Angry at the lack
+of normalization? Install [lookup_by](https://github.com/companygardener/lookup_by/) and rewrite the
+migration and model to use it; Tocsin won't even notice.)
+<pre>rake tocsin:install</pre>
 
-Lastly, configure Tocsin to be useful. Create an initializer in `config/initializers/tocsin.rb` that looks something like this:
+Lastly, configure Tocsin to be useful. Create an initializer in `config/initializers/tocsin.rb` that
+looks something like this:
+
 <pre>
 Tocsin.configure do |c|
   c.from_address = 'me@mysite.com'
@@ -38,6 +40,7 @@ Tocsin.notify :category => :user_registrations,
 </pre>
 
 If you want to sound the alarm:
+
 <pre>
 begin
   # ...
@@ -49,6 +52,7 @@ end
 </pre>
 
 In any code you want to watch for explosions:
+
 <pre>
 Tocsin.watch! :category => :important_stuff, :severity => :critical, :message => "Error doing important stuff!" do
   Important::Stuff.do!
