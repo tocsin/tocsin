@@ -2,8 +2,8 @@
 Tocsin is a library designed to simplify the task of notifying interested parties about your site's
 operation. You may already be tracking errors through [New Relic](http://www.newrelic.com), but not
 all errors are created equal -- there are probably parts of your site where an exception is a bigger
-problem than a random link surfing throwing 404s. Tocsin will inform you when these parts of your
-site break, or when important events happen, or really whenever you configure it to notify you.
+problem than random link surfing that throws 404s. Tocsin will inform you when these parts of your
+site break, or when important events happen, or really just whenever you configure it to notify you.
 
 Currently, Tocsin works only in Rails 3, and supports notification via email.
 
