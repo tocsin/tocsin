@@ -7,6 +7,8 @@ site break, or when important events happen, or really just whenever you configu
 
 Currently, Tocsin works only in Rails 3, and supports notification via email.
 
+[![Build Status](https://travis-ci.org/tocsin/tocsin.png)](https://travis-ci.org/tocsin/tocsin)
+
 ## Installation
 Add Tocsin to your Gemfile:
 <pre>gem 'tocsin'</pre>
