@@ -10,6 +10,7 @@ Gem::Specification.new do |s|
   s.homepage    = "https://github.com/tocsin/tocsin"
   s.summary     = %q{Notification and alert library for Rails-like projects.}
   s.description = %q{Supports wrapping code that you want to be alerted of failures in, as well as sending notifications through the same mechanism.}
+  s.license     = 'MIT'
 
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
@@ -19,6 +20,8 @@ Gem::Specification.new do |s|
   # specify any dependencies here; for example:
   s.add_development_dependency "rspec"
   s.add_development_dependency "mocha"
+  s.add_development_dependency "simplecov"
+  s.add_development_dependency "simplecov-rcov"
 
   s.add_runtime_dependency "rails", ">= 3.0.0"
   s.add_runtime_dependency "resque"

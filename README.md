@@ -60,3 +60,6 @@ Tocsin.watch! :category => :important_stuff, :severity => :critical, :message =>
   Important::Stuff.do!
 end
 </pre>
+
+## License
+[MIT](http://opensource.org/licenses/MIT). See [LICENSE](LICENSE).
